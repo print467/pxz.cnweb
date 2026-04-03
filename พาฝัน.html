@@ -1,0 +1,302 @@
+<html lang="th"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ViperX-V2">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/ZY3mzMjr/658160823-914565251550952-5643616618095272253-n.jpg">
+    <title>PXZ.CN X PANEL V.2 COMPLETE</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Montserrat:wght@400;700&display=swap');
+
+        :root {
+            --primary-red: #3330ff;
+            --primary-green: #229ee6;
+            --neon-glow: 0 0 15px rgba(80, 95, 160, 0.7);
+        }
+
+        /* พื้นหลังขยับ (Moving Mesh) */
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background: linear-gradient(-45deg, #05c9fa, #0077ff, #002df8, #78d4ff);
+            background-size: 400% 400%;
+            animation: gradientMove 12s ease infinite;
+            font-family: 'Montserrat', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; color: #fff; overflow: hidden;
+            -webkit-user-select: none;
+        }
+
+        #particles-js { position: absolute; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+
+        /* Notification */
+        #toast {
+            position: absolute; top: 30px; right: 30px;
+            padding: 12px 25px; border-radius: 50px; font-size: 13px; font-weight: bold;
+            z-index: 1000; opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(-20px) scale(0.5); pointer-events: none;
+            backdrop-filter: blur(10px); border: 1px solid rgba(4, 0, 255, 0.1);
+        }
+        .toast-on { background: rgba(52, 199, 89, 0.3); color: #fff; opacity: 1 !important; transform: translateY(0) scale(1) !important; box-shadow: 0 0 20px rgba(52, 199, 89, 0.4); }
+        .toast-off { background: rgba(0, 4, 238, 0.3); color: #fff; opacity: 1 !important; transform: translateY(0) scale(1) !important; box-shadow: 0 0 20px rgba(0, 47, 255, 0.4); }
+
+        .glass {
+            background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 217, 255, 0.1);
+            border-radius: 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            z-index: 10;
+        }
+
+        #login-screen { width: 340px; padding: 45px 30px; text-align: center; }
+        .login-box h2 { font-family: 'Orbitron'; letter-spacing: 5px; color: var(--primary-red); text-shadow: var(--neon-glow); }
+        .login-box input { width: 85%; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 12px; text-align: center; margin-bottom: 20px; outline: none; }
+        .login-box button { width: 95%; padding: 15px; background: var(--primary-red); color: #fff; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; box-shadow: var(--neon-glow); }
+
+        #loading-container { display: none; margin-top: 30px; }
+        .progress-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+        .progress-bar { width: 0%; height: 100%; background: var(--primary-red); box-shadow: 0 0 15px var(--primary-red); }
+
+        #main-panel { display: none; width: 95vw; max-width: 650px; height: 600px; flex-direction: column; overflow: hidden; position: relative; }
+        .window-header { height: 50px; background: rgba(255,255,255,0.05); display: flex; align-items: center; padding: 0 20px; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .header-title { font-family: 'Orbitron'; color: #003cff; font-size: 11px; }
+
+        .main-container { display: flex; flex: 1; overflow: hidden; position: relative; }
+        .sidebar { width: 150px; background: rgba(0,0,0,0.4); border-right: 1px solid rgba(255,255,255,0.05); overflow-y: auto; }
+        .nav-item { padding: 22px 10px; text-align: center; font-size: 10px; color: #666; cursor: pointer; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .nav-item.active { color: #fff; background: rgba(0, 60, 255, 0.15); border-left: 4px solid var(--primary-red); text-shadow: 0 0 10px var(--primary-red); }
+
+        .content { flex: 1; padding: 25px; display: none; overflow-y: auto; animation: slideIn 0.4s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .content.active { display: block; }
+
+        .section-header { font-family: 'Orbitron'; font-size: 12px; color: var(--primary-red); margin: 15px 0; border-left: 4px solid var(--primary-red); padding-left: 10px; }
+
+        .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .option-item { background: rgba(255, 255, 255, 0.03); padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); display: flex; align-items: center; gap: 10px; font-size: 10px; }
+
+        .slider-container { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
+        .val-text { font-family: 'Orbitron'; color: var(--primary-red); font-weight: bold; }
+        input[type="range"] { width: 100%; -webkit-appearance: none; background: #333; height: 4px; border-radius: 10px; margin-top: 10px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #fff; border-radius: 50%; border: 3px solid var(--primary-red); }
+
+        select { width: 100%; padding: 12px; background: #000; color: #fff; border-radius: 10px; border: 1px solid #444; font-family: 'Orbitron'; font-size: 10px; margin-bottom: 10px; outline: none; }
+
+        #console-logs {
+            position: absolute; bottom: 60px; right: 20px; width: 180px; height: 80px;
+            background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; padding: 8px; font-family: monospace; font-size: 8px;
+            color: #34c759; overflow-y: auto; pointer-events: none;
+        }
+
+        .btn-game { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: #1a1a1a; color: white; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .btn-game:active { background: var(--primary-red); transform: translateY(2px); }
+
+        .footer-info { position: absolute; bottom: 10px; width: 100%; display: flex; justify-content: space-around; font-size: 8px; color: #444; font-family: monospace; }
+    </style>
+<style id="custom-cursor" type="text/css">body button, body [type='button'], body input[type='reset'], body input[type='submit'], body [role="button"], ::-webkit-search-cancel-button, ::-webkit-search-decoration, ::-webkit-scrollbar-button, ::-webkit-file-upload-button, [role^=button], .cc_pointer, [type="search"]::-webkit-search-cancel-button, a, select, [type="search"]::-webkit-search-decoration, .paper-button, .ytp-progress-bar-container, input[type=submit], :link, :visited, a > *, img,  ::-webkit-scrollbar-button, .ogdlpmhglpejoiomcodnpjnfgcpmgale_pointer, ::-webkit-file-upload-button, .ytp-volume-panel, #myogdlpmhglpejoiomcodnpjnfgcpmgale .icon, body .custom-cursor-on-hover {cursor: url("data:image/png;base64,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") 15 1, pointer !important;} html,body,body select,body .custom-cursor-default-hover {cursor: url("data:image/png;base64,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") 7 1, auto !important;}</style><script>(()=>{const a=[{w:728,h:90},{w:300,h:250},{w:336,h:280},{w:300,h:600},{w:320,h:50}],b=c=>a.some(d=>c.naturalWidth==d.w&&c.naturalHeight==d.h),e=()=>document.querySelectorAll('img').forEach(c=>c.complete?b(c)&&c.remove():c.onload=()=>b(c)&&c.remove());new MutationObserver(e).observe(document.body,{childList:!0,subtree:!0}),e()})();</script></head>
+<body>
+
+<div id="particles-js"><canvas class="particles-js-canvas-el" width="435" height="957" style="width: 100%; height: 100%;"></canvas></div>
+<div id="toast"></div>
+
+<div id="login-screen" class="glass">
+    <div class="login-box">
+        <h2>PXZ.CN</h2>
+        <input type="password" id="pass-input" placeholder="กรอก รหัส pxz">
+        <button onclick="handleLogin()">ตกลง</button>
+        <div id="loading-container">
+            <div class="progress-bg"><div id="p-bar" class="progress-bar"></div></div>
+            <div id="p-text" style="color:var(--primary-red); font-size:10px; margin-top:10px; font-family:'Orbitron'">BOOTING 0%</div>
+        </div>
+    </div>
+</div>
+
+<div id="main-panel" class="glass">
+    <div class="window-header">
+        <div style="display:flex; gap:8px;">
+            <div style="background:#ff5f56; width:10px; height:10px; border-radius:50%"></div>
+            <div style="background:#ffbd2e; width:10px; height:10px; border-radius:50%"></div>
+            <div style="background:#27c93f; width:10px; height:10px; border-radius:50%"></div>
+        </div>
+        <div class="header-title" id="top-fps">PXZ.CN  X PANEL V.2 | 55.3 FPS</div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+           <div class="nav-item active" onclick="popClick(); openTab(event, 'aimbot')">MAGNETIC</div>
+            <div class="nav-item" onclick="popClick(); openTab(event, 'sensi')">REGEDIT</div>
+            <div class="nav-item" onclick="popClick(); openTab(event, 'fixfps')">FIX-FPS</div>
+            <div class="nav-item" onclick="popClick(); openTab(event, 'boster')">BOOSTER</div>
+            <div class="nav-item" style="color:var(--primary-green)" onclick="popClick(); openTab(event, 'startgame')">START GAME</div>
+        </div>
+
+        <div id="aimbot" class="content active">
+            <div class="section-header">MAGNETIC MODULE</div>
+            <div class="grid-options">
+                <div class="option-item"><input type="checkbox" onchange="notify(this)"> AIMBOT 50%</div>
+                <div class="option-item"><input type="checkbox" onchange="notify(this)"> AIM DICK40%</div>
+                <div class="option-item"><input type="checkbox" onchange="notify(this)"> Aim NECK 70%</div>
+                <div class="option-item"><input type="checkbox" onchange="notify(this)"> AIM HEAD 85%</div>
+                <div class="option-item"><input type="checkbox" onchange="notify(this)"> AIM HIP  70%</div>
+                <div class="option-item"><input type="checkbox" onchange="notify(this)"> AIM testis 40%</div>
+            </div>
+            <div class="section-header">Improve performance</div>
+            <div class="slider-container">
+                <div style="display:flex; justify-content:space-between; font-size:10px;"><span>Improve performance</span><span class="val-text" id="suck-val">99%</span></div>
+                <input type="range" min="0" max="100" value="99" oninput="updateVal('suck-val', this.value + '%')">
+            </div>
+        </div>
+
+        <div id="sensi" class="content">
+            <div class="section-header">SENSITIVITY</div>
+            <div class="slider-container">
+                <div style="display:flex; justify-content:space-between; font-size:10px;"><span>SETTING DPI</span><span class="val-text" id="dpi-val">24000</span></div>
+                <input type="range" min="0" max="24000" value="480" oninput="updateVal('dpi-val', this.value)">
+            </div>
+            <div class="slider-container">
+                <div style="display:flex; justify-content:space-between; font-size:10px;"><span>TOUCH SCREEN</span><span class="val-text" id="ms-val">99999ms</span></div>
+                <input type="range" min="0.1" max="99999" step="0.1" value="0.5" oninput="updateVal('ms-val', this.value + 'ms')">
+            </div>
+            <div class="option-item" style="width:100%"><input type="checkbox" onchange="notify(this)"> BOOST DPI</div>
+        </div>
+
+        <div id="fixfps" class="content">
+            <div class="section-header">FPS-HZ SETTING</div>
+            <div class="slider-container">
+                <div style="display:flex; justify-content:space-between; font-size:10px;"><span>FPS-HZ</span><span class="val-text" id="fpshz-val">240000 FPS-HZ(ไม่เกี่ยวกับFPSขวาบนนะคับมันตรวจจับไม่ติด)</span></div>
+                <input type="range" min="0" max="240000" value="60" oninput="updateVal('fps-val', this.value + ' FPS')">
+            </div>
+        </div>
+
+        <div id="startgame" class="content">
+            <div class="section-header">DEVICE CALIBRATION</div>
+            <select id="device" onchange="popClick(); addLog('Device: ' + this.value)">
+                <optgroup label="iPhone 16 / 17 Series">
+                    <option>ios 26</option><option>ios 26.1</option><option>ios 26.2</option><option>ios 26.3</option>
+                    <option>iOS 19.0</option><option>iOS 19.1</option><option>iOS 20.1</option><option>iOS 20.9</option>
+                </optgroup>
+                <optgroup label="iPhone 14 / 15 Series">
+                    <option>iOS 18.4</option><option>iOS 18.5</option><option>18.6</option><option>18.7</option>
+                    <option>iOS 18.3</option><option>iOS 18.2</option><option>18.1</option><option>18.0</option>
+                </optgroup>
+                <optgroup label="iPhone-11-12-13">
+                    <option>iOS 17.5</option><option>iOS 17.6</option>
+                    <option>iOS 17.4 x</option><option>iOS 17.3</option>
+                    <option>iOS 17.1 </option><optioniOS></optioniOS>17.2</option>
+                </optgroup>
+                <optgroup label="Classic iPhone-8">
+                    <option>iOS 16.5</option><option>iOS 16.6.1/option>
+                    <option>iOS 16.1</option><option>iOS 16.1.1</option>
+                    <option>iOS 16.0.1</option><option>iOS 16.0.2</option>
+                    <option>iOS 16.0</option>
+                </optgroup>
+            </select>
+            <button class="btn-game" onclick="launchGame('Free Fire')">FREE FIRE <div class="game-icon"></div></button>
+            <button class="btn-game" onclick="launchGame('Free Fire MAX')">FF MAX <div class="game-icon"></div></button>
+        </div>
+
+        <div id="boster" class="content">
+            <div class="section-header">Anti-Setting</div>
+            <div class="option-item" style="width:100%; margin-bottom:10px;"><input type="checkbox" id="fps-ultra-check" onchange="toggleBoster(this)"> ANTI-Blacklist</div>
+            <div class="grid-options">
+                <div class="option-item"><input type="checkbox" onchange="notify(this)"> Anti-Ban</div>
+                <div class="option-item"><input type="checkbox" onchange="notify(this)"> Anti Report</div>
+            </div>
+        </div>
+
+        <div id="console-logs"><div id="log-text">System On...</div></div>
+    </div>
+
+    <div class="footer-info">
+        <span>High: <b id="hwid-val">2.9</b></span>
+        <span>PING: <b id="ping-val">24ms</b></span>
+        <span>SERVER: <b style="color:var(--primary-green)">by developer pxz.cn</b></span>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script>
+    let isBosterActive = false;
+    const popSound = new Audio("data:audio/wav;base64,UklGRj4AAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YRIDAAAAZv9m/2b/Zv9m/2b/Zv8=");
+    popSound.volume = 0.4;
+
+    particlesJS('particles-js', {"particles":{"number":{"value":50},"color":{"value":"#ffffff"},"opacity":{"value":0.2},"size":{"value":1},"move":{"enable":true,"speed":1.2,"direction":"top"}}});
+
+    function popClick() { popSound.currentTime = 0; popSound.play(); }
+
+    function addLog(msg) {
+        const log = document.getElementById('log-text');
+        log.innerHTML += `<br>> ${msg}`;
+        document.getElementById('console-logs').scrollTop = 1000;
+    }
+
+    function notify(checkbox) {
+        popClick();
+        const state = checkbox.checked ? "ON" : "OFF";
+        const label = checkbox.parentElement.innerText.trim();
+        addLog(label + ": " + state);
+        const t = document.getElementById('toast');
+        t.innerText = checkbox.checked ? "SYSTEM ACTIVATED" : "OFF";
+        t.className = checkbox.checked ? "toast-on" : "toast-off";
+        setTimeout(() => t.className = "", 2000);
+    }
+
+    function handleLogin() {
+        if(document.getElementById('pass-input').value === "pxz") {
+            popClick();
+            document.getElementById('loading-container').style.display = 'block';
+            let p = 0;
+            const inv = setInterval(() => {
+                p += Math.floor(Math.random() * 12) + 2;
+                if(p >= 100) {
+                    p = 100; clearInterval(inv);
+                    setTimeout(() => {
+                        document.getElementById('login-screen').style.display = 'none';
+                        document.getElementById('main-panel').style.display = 'flex';
+                        addLog("Authenticated Device...");
+                    }, 500);
+                }
+                document.getElementById('p-bar').style.width = p + '%';
+                document.getElementById('p-text').innerText = "BOOTING " + p + "%";
+            }, 80);
+        } else { alert("ใส่รหัส pxz นะคับบ"); }
+    }
+
+    function openTab(e, n) {
+        let c = document.getElementsByClassName("content");
+        for (let i = 0; i < c.length; i++) c[i].style.display = "none";
+        let ni = document.getElementsByClassName("nav-item");
+        for (let i = 0; i < ni.length; i++) ni[i].classList.remove("active");
+        document.getElementById(n).style.display = "block";
+        e.currentTarget.classList.add("active");
+        addLog("Switch Tab: " + n.toUpperCase());
+    }
+
+    function updateVal(id, val) { popClick(); document.getElementById(id).innerText = val; }
+    function toggleBoster(cb) { isBosterActive = cb.checked; notify(cb); }
+
+    function launchGame(g) {
+        popClick(); addLog("Injecting Config: " + g);
+        setTimeout(() => { window.location.href = g.includes("MAX") ? "freefiremax://" : "freefire://"; }, 1500);
+    }
+
+    document.getElementById('hwid-val').innerText = Math.random().toString(36).substr(2, 8).toUpperCase();
+    setInterval(() => {
+        let min = isBosterActive ? 220 : 50, max = isBosterActive ? 240 : 60;
+        let fps = (Math.random() * (max - min) + min).toFixed(1);
+        document.getElementById('top-fps').innerText = `PXZ.CN PANEL | ${fps} FPS`;
+        document.getElementById('ping-val').innerText = (Math.random() * 10 + 20).toFixed(0) + "ms";
+    }, 600);
+</script>
+
+
+</body></html>
